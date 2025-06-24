@@ -308,6 +308,10 @@ bool CClipboardViewer::ValidActiveWnd()
 			m_activeWindowTitle = TopLevelWindowText(PID);			
 		}
 	}
+	else
+   {
+       return false;
+   }
 
 	//L"RuntimeBroker.exe" is what all modern apps report as
 	if (m_activeWindow == _T(""))
