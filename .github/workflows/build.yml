@@ -18,14 +18,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set BUILD_NUMBER
-        run: echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
-
-      - name: Compute version strings
-        run: |
-          echo "VERSION_FILENAME=3_25_${{ env.BUILD_NUMBER }}_0"     >> $GITHUB_ENV
-          echo "VERSION_DOT_FILENAME=3.25.${{ env.BUILD_NUMBER }}.0" >> $GITHUB_ENV
-
       - name: Add MSBuild to PATH
         uses: microsoft/setup-msbuild@v2
 
@@ -35,21 +27,22 @@ jobs:
       - name: Build Release x64
         run: msbuild ${{ env.SOLUTION_FILE_PATH }} /p:Configuration=Release /p:Platform=x64
 
-      - name: Set file version on Ditto.exe
-        run: .\DittoSetup\rcedit-x64 Release64\Ditto.exe --set-file-version ${{ env.VERSION_DOT_FILENAME }} --set-product-version ${{ env.VERSION_DOT_FILENAME }}
+      - name: Stamp version on Ditto.exe
+
+        run: .\DittoSetup\rcedit-x64 Release64\Ditto.exe --set-file-version 3.25.${{ github.run_number }}.0 --set-product-version 3.25.${{ github.run_number }}.0
 
       - name: Build portable ZIP
-        run: DittoSetup\BuildPortableZIP.bat "DittoPortable_${{ env.VERSION_FILENAME }}" bit64
+        run: DittoSetup\BuildPortableZIP.bat "DittoPortable_3_25_${{ github.run_number }}_0" bit64
 
       - name: Zip debug symbols
         run: |
-          7z a DittoSetup\output\DittoDebug_${{ env.VERSION_FILENAME }}.7z *.pdb -r
-          7z a DittoSetup\output\DittoDebug_${{ env.VERSION_FILENAME }}.7z *.map -r
+          7z a DittoSetup\output\DittoDebug_3_25_${{ github.run_number }}_0.7z *.pdb -r
+          7z a DittoSetup\output\DittoDebug_3_25_${{ github.run_number }}_0.7z *.map -r
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Ditto-${{ env.VERSION_FILENAME }}-artifacts
+          name: Ditto-3_25_${{ github.run_number }}_0-artifacts
           path: |
             Release64/**/*.exe
             Release64/**/*.dll
