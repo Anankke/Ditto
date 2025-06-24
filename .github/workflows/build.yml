@@ -19,8 +19,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set BUILD_NUMBER
-        run: |
-          echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
+        run: echo "BUILD_NUMBER=${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Compute version strings
         run: |
@@ -37,10 +36,7 @@ jobs:
         run: msbuild ${{ env.SOLUTION_FILE_PATH }} /p:Configuration=Release /p:Platform=x64
 
       - name: Set file version on Ditto.exe
-        run: |
-          DittoSetup\rcedit-x64 Release64\Ditto.exe \
-            --set-file-version    ${{ env.VERSION_DOT_FILENAME }} \
-            --set-product-version ${{ env.VERSION_DOT_FILENAME }}
+        run: .\DittoSetup\rcedit-x64 Release64\Ditto.exe --set-file-version ${{ env.VERSION_DOT_FILENAME }} --set-product-version ${{ env.VERSION_DOT_FILENAME }}
 
       - name: Build portable ZIP
         run: DittoSetup\BuildPortableZIP.bat "DittoPortable_${{ env.VERSION_FILENAME }}" bit64
@@ -61,3 +57,4 @@ jobs:
             DittoSetup/output/**/*.exe
             DittoSetup/output/**/*.7z
             DittoSetup/output/**/*.zip
+            DittoSetup/output/**/*.msi
